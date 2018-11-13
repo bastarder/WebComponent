@@ -23,24 +23,21 @@ class Componment extends HTMLElement{
     setTimeout(()=>{
       let vm = this;
       let data = this.data();
-      let $data = {};
       for(let key in data){
-        $data[`${key}`] = data[key];
 
         Object.defineProperties(this, {
           [key]: {
             get: () => {
-              return $data[`${key}`];
+              return data[key];
             },
             set: (i) => {
               vm._render();
-              $data[`${key}`] = i;
+              data[key] = i;
               return i;
             }
           }
         })
-
-        this.$data = $data;
+        this.$data = data;
 
         this.created && this.created()
       }

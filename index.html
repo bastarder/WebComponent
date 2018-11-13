@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <p>dqwdqwdqwdqw</p>
+  <pop-up-info/>
+</body>
+<script src="./index.js"></script>
+<script>
+
+class Componment extends HTMLElement{
+  static get observedAttributes() {
+    return this.props;
+  }
+
+  constructor(){
+    super();
+    setTimeout(()=>{
+      let vm = this;
+      let data = this.data();
+      let $data = {};
+      for(let key in data){
+        $data[`${key}`] = data[key];
+
+        Object.defineProperties(this, {
+          [key]: {
+            get: () => {
+              return $data[`${key}`];
+            },
+            set: (i) => {
+              vm._render();
+              $data[`${key}`] = i;
+              return i;
+            }
+          }
+        })
+
+        this.$data = $data;
+
+        this.created && this.created()
+      }
+
+      this._render();
+    },0)
+
+    this.view = this.attachShadow({mode: 'open'});
+  }
+
+  _render(){
+    this.view.innerHTML = this.render();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue){
+    console.log(name, oldValue, newValue)
+
+    this._render();
+  }
+
+  connectedCallback(){
+    this.mounted && this.mounted();
+  }
+
+  disconnectedCallback(){
+    console.log('remove')
+  }
+
+  adoptedCallback() {
+    console.log('Custom square element moved to new page.');
+  }
+}
+
+
+
+class PopUpInfo extends Componment{
+  constructor(){
+    super();
+    // this.props = ['text']
+    this.data = () => {
+      return {
+        text: 123,
+      }
+    }
+  }
+
+  created() {
+    setInterval(() => {
+      this.text = Math.random()
+    }, 1000)
+  }
+
+  mounted() {
+    console.log('mounted')
+  }
+
+  render() {
+    return `
+      <div>
+        Niu Bi ${this.text}
+      </div>
+    `
+  }
+
+}
+customElements.define('pop-up-info', PopUpInfo)
+
+</script>
+</html>

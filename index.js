@@ -1,72 +1,69 @@
+class Vun {
+  constructor() {}
 
-
-class Vun{
-  constructor(){}
-
-  static component(name, options){
-    return customElements.define( 
+  static component(name, options) {
+    return customElements.define(
       name,
-    class Component extends HTMLElement{
-      static get observedAttributes() {
-        return options.props;
-      }
-
-      constructor(){
-        super();
-
-        Object.assign(this, options)
-
-        this.lifeHookAction('beforeCreate');
-        this.view = this.attachShadow({mode: 'open'});
-        this.$data = this.data();
-        for(let key in this.$data){
-          Object.defineProperties(this, {
-            [key]: {
-              get: () => {
-                return this.$data[key];
-              },
-              set: (i) => {
-                this._render();
-                this.$data[key] = i;
-                return i;
-              }
-            }
-          })
+      class Component extends HTMLElement {
+        static get observedAttributes() {
+          return options.props;
         }
-        this.lifeHookAction('created');
-        this.view.innerHTML = this.render();
-        this.lifeHookAction('beforeMount');
-      }
 
-      lifeHookAction(actionName, ...opts){
-        return this[actionName] && this[actionName](...opts)
-      }
+        constructor() {
+          super();
 
-      _render(){
-        if(this.lifeHookAction('beforeUpdate')){
+          Object.assign(this, options);
+
+          this.lifeHookAction("beforeCreate");
+          this.view = this.attachShadow({ mode: "open" });
+          this.$data = this.data();
+          for (let key in this.$data) {
+            Object.defineProperties(this, {
+              [key]: {
+                get: () => {
+                  return this.$data[key];
+                },
+                set: i => {
+                  this._render();
+                  this.$data[key] = i;
+                  return i;
+                }
+              }
+            });
+          }
+          this.lifeHookAction("created");
           this.view.innerHTML = this.render();
-          this.lifeHookAction('updated');
-        };
-      }
+          this.lifeHookAction("beforeMount");
+        }
 
-      attributeChangedCallback(name, oldValue, newValue){
-        this._render();
-      }
+        lifeHookAction(actionName, ...opts) {
+          return this[actionName] && this[actionName](...opts);
+        }
 
-      connectedCallback(){
-        this.lifeHookAction('mounted');
-      }
+        _render() {
+          if (this.lifeHookAction("beforeUpdate")) {
+            this.view.innerHTML = this.render();
+            this.lifeHookAction("updated");
+          }
+        }
 
-      disconnectedCallback(){
-        this.lifeHookAction('beforeDestroy');
-        this.lifeHookAction('destroyed');
-      }
+        attributeChangedCallback(name, oldValue, newValue) {
+          this._render();
+        }
 
-      adoptedCallback() {
-        console.log('Custom square element moved to new page.');
-      }
-    }
-    )
+        connectedCallback() {
+          this.lifeHookAction("mounted");
+        }
 
+        disconnectedCallback() {
+          this.lifeHookAction("beforeDestroy");
+          this.lifeHookAction("destroyed");
+        }
+
+        adoptedCallback() {
+          console.log("Custom square element moved to new page.");
+        }
+      }
+    );
   }
 }
